@@ -5,6 +5,11 @@ const CompanySchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  role: {
+    type: String,
+    enum: ["prospect", "client"],
+    default: "prospect",
+  },
   location: {
     city: {
       type: String,
@@ -17,11 +22,6 @@ const CompanySchema = new mongoose.Schema({
     postCode: {
       type: String,
       default: "",
-    },
-    role: {
-      type: String,
-      enum: ["prospect", "client"],
-      default: "prospect",
     },
     coodinates: {
       type: [
@@ -42,7 +42,7 @@ const CompanySchema = new mongoose.Schema({
   },
 
   turnover: {
-    type: Number,
+    type: String,
   },
 
   activity: {

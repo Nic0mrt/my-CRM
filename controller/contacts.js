@@ -4,6 +4,7 @@ const Company = require("../models/Company");
 exports.getContacts = async (req, res) => {
   try {
     const usersToSend = await Contact.find().sort({ name: 1 });
+
     res.json({ success: true, data: usersToSend });
   } catch (error) {
     res.json({ success: false, error });
@@ -12,13 +13,14 @@ exports.getContacts = async (req, res) => {
 
 exports.createContactForCompany = async (req, res) => {
   try {
-    let { name, firstname, phone, mobile, email, gender } = req.body;
+    let { name, firstname, position, phone, mobile, email, gender } = req.body;
     name = String(name.toUpperCase());
     email = String(email.toLowerCase());
     const contactToSave = new Contact({
       name,
       firstname,
       phone,
+      position,
       mobile,
       email,
       gender,

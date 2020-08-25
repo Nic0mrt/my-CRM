@@ -15,7 +15,6 @@ exports.addIvoice = async (req, res) => {
     const { company_id, subject, items } = req.body;
 
     let invoiceTosave = new Invoice({
-      company_id: company_id,
       subject: subject,
       items: items,
     });
