@@ -37,8 +37,58 @@ exports.createContactForCompany = async (req, res) => {
     await company.updateOne({ _id: company_id, company });
 
     const newListOfContacts = await Contact.find().sort({ name: 1 });
+
     res.json({ success: true, data: newListOfContacts });
   } catch (error) {
-    res.json({ success: false, error });
+    res.json({ success: false, error: error.message });
+  }
+};
+
+exports.getContactsByCompanyId = async (req, res) => {
+  try {
+    const { company_id } = req.params;
+    const contactsToSend = await Contact.find({ company_id })
+      .sort({ name: 1 })
+      .sort({ firstname: 1 });
+
+    res.json({ success: true, data: contactsToSend });
+  } catch (error) {
+    res.json({ success: false, error: error.message });
+  }
+};
+
+exports.deleteContactByCompanyId = async (req, res) => {
+  try {
+    const { contact_id } = req.body;
+    const { company_id } = req.params;
+
+    await Contact.deleteOne({ _id: contact_id });
+
+    const companyToUpdate = await Company.updateOne(
+      { _id: company_id },
+      {
+        $pull: { contacts: { _id: contact_id } },
+      }
+    )
+      .populate("contacts")
+      .populate("invoices");
+
+    res.json({ success: true, data: companyToUpdate });
+  } catch (error) {
+    res.json({ success: false, error: error.message });
+  }
+};
+
+exports.modifyContactWithId = async (req, res) => {
+  try {
+    const { contact_id } = req.params;
+    const contactToUpdate = await Contact.updateOne(
+      { _id: contact_id },
+      { _id: contact_id, ...req.body }
+    );
+
+    res.json({ success: true, data: contactToUpdate });
+  } catch (error) {
+    res.json({ success: false, error: error.message });
   }
 };

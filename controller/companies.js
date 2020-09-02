@@ -2,6 +2,7 @@ const Company = require("../models/Company");
 const Contact = require("../models/Contact");
 const Invoice = require("../models/Invoice");
 const { setMaxListeners } = require("../models/Company");
+const { options } = require("../routes/contacts");
 
 const LIMIT = 10;
 
@@ -13,7 +14,10 @@ exports.getCompanies = async (req, res) => {
 
     const allCompanies = await Company.find({ role: type })
       .sort({ name: 1 })
-      .populate("contacts")
+      .populate({
+        path: "contacts",
+        options: { sort: { name: 1, firstname: 1 } },
+      })
       .populate("invoices");
 
     let companiesToSend = allCompanies;
@@ -40,10 +44,11 @@ exports.getCompanies = async (req, res) => {
 
 exports.getContactsByCompanyId = async (req, res) => {
   try {
-    const companyFound = await Company.findById(req.params.id).populate(
-      "contacts"
+    const contacts = await Contact.find({ company_id: req.params.id }).sort(
+      { name: 1 }.sort({ firstname: 1 })
     );
-    res.json({ success: true, data: companyFound.contacts });
+
+    res.json({ success: true, data: contacts });
   } catch (error) {
     res.json({ success: false, error });
   }
