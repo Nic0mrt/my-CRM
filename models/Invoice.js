@@ -22,6 +22,12 @@ const InvoiceSchema = new mongoose.Schema({
     default: "En attente",
   },
 
+  type: {
+    type: String,
+    enum: ["Avoir", "Facture"],
+    default: "Facture",
+  },
+
   subject: {
     type: String,
     required: true,

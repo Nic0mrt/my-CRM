@@ -1,6 +1,7 @@
 const Company = require("../models/Company");
 const Contact = require("../models/Contact");
 const Invoice = require("../models/Invoice");
+const Comment = require("../models/Comment");
 const { setMaxListeners } = require("../models/Company");
 const { options } = require("../routes/contacts");
 
@@ -18,7 +19,8 @@ exports.getCompanies = async (req, res) => {
         path: "contacts",
         options: { sort: { name: 1, firstname: 1 } },
       })
-      .populate("invoices");
+      .populate("invoices")
+      .populate({ path: "comments", options: { sort: { date: -1 } } });
 
     let companiesToSend = allCompanies;
 
@@ -72,8 +74,6 @@ exports.createContactByCompanyId = async (req, res) => {
       company_id,
     });
 
-    console.log(contactToSave);
-
     await contactToSave.save();
 
     const companyToUpdate = await Company.findByIdAndUpdate(
@@ -83,6 +83,46 @@ exports.createContactByCompanyId = async (req, res) => {
     )
       .populate("contacts")
       .populate("invoices");
+
+    res.json({ success: true, data: companyToUpdate });
+  } catch (error) {
+    res.json({ success: false, error: error.message });
+  }
+};
+
+exports.getCommentsByCompanyId = async (req, res) => {
+  try {
+    const comments = await Comment.find({ company_id: req.params.id }).sort({
+      date: -1,
+    });
+    res.json({ success: true, data: comments });
+  } catch (error) {
+    res.json({ success: false, error });
+  }
+};
+
+exports.createCommentByCompanyId = async (req, res) => {
+  try {
+    let { description, contact } = req.body;
+
+    const company_id = req.params.id;
+
+    const commentToSave = new Comment({
+      description,
+      contact,
+      company_id,
+    });
+
+    await commentToSave.save();
+
+    const companyToUpdate = await Company.findByIdAndUpdate(
+      company_id,
+      { $push: { comments: commentToSave._id } },
+      { new: true, useFindAndModify: false }
+    )
+      .populate("contacts")
+      .populate("invoices")
+      .populate("comments");
 
     res.json({ success: true, data: companyToUpdate });
   } catch (error) {

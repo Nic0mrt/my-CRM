@@ -80,14 +80,8 @@ const CompanySchema = new mongoose.Schema({
   comments: {
     type: [
       {
-        date: {
-          type: Date,
-          default: Date.now,
-        },
-        description: {
-          type: String,
-          required: true,
-        },
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Comment",
       },
     ],
   },
