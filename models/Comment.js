@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const CommentSchema = new mongoose.Schema({
-  date: { type: Date, default: Date.now },
+  date: { type: Date, default: Date.now() },
 
   contact: { type: String },
 

@@ -38,6 +38,7 @@ exports.getCompanies = async (req, res) => {
     }
     const totalLength = companiesToSend.length;
     companiesToSend = companiesToSend.slice(startIndex, endIndex);
+
     res.json({ success: true, data: companiesToSend, totalLength });
   } catch (error) {
     res.json({ success: false, error });
